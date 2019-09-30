@@ -102,23 +102,29 @@ class ZooKeeper(GenericNetlinkSocket):
 
         cfg_path = kwargs.get('config', None)
         if cfg_path is None:
-            raise RuntimeError('Missing "config" argument!')
+            cfg_path = os.path.abspath(os.path.realpath(__file__))
+            cfg_path = os.path.dirname(cfg_path)
+            cfg_path = os.path.join(cfg_path, 'config')
+            logging.warning('ZooKeeper received no config. Using default at: %s' % cfg_path)
+            # raise RuntimeError('Missing "config" argument!')
+
+        assert(os.path.exists(cfg_path)), 'Config at %s not found!' % cfg_path
 
         self.msg_flags = kwargs.get('msg_flags', NLM_F_REQUEST|NLM_F_ACK)
         self.cmd = Commandment()    # Now pyroute2 methods see it.
         self.cfg = Configurator(cfg_path)
 
-        # pyroute2 expacts a certain class and format for the "message" protocols.
-        # This sets everything needed from the config file.
-        self.msg_model = KernelMsgModel
-        self.msg_model.nla_map = self.cfg.msg_model
-        self.cmd.msg_map = self.cfg.cmd_model
+        # # pyroute2 expacts a certain class and format for the "message" protocols.
+        # # This sets everything needed from the config file.
+        # self.msg_model = KernelMsgModel
+        # self.msg_model.nla_map = self.cfg.msg_model
+        # self.cmd.msg_map = self.cfg.cmd_model
 
-        # construct a Command Model for the netlink communication
-        self.cfg.cmd_model = self._assign_msg_to_cmd(self.cfg.cmd_model)
+        # # construct a Command Model for the netlink communication
+        # self.cfg.cmd_model = self._assign_msg_to_cmd(self.cfg.cmd_model)
 
-        if not kwargs.get('dont_bind', False):
-            self.bind()
+        # if not kwargs.get('dont_bind', False):
+        #     self.bind()
 
 
     @property
@@ -169,69 +175,22 @@ class ZooKeeper(GenericNetlinkSocket):
             raise RuntimeError('bind() failed: %s' % str(exc))
 
 
-    def build_msg(self, **kwargs):
-        raise NotImplementedError('build_msg not implemented! Forgot to override?')
-        # cmd,
-        # GCID,
-        # CCLASS,
-        # UUID
-        # if not isinstance(UUID, uuid.UUID):
-        #     raise RuntimeError('UUID must be type uuid.UUID')
-        # msg = self.msg_model()
-        # msg['cmd'] = GENZ_C_name2num[cmd]
-        # msg['pid'] = os.getpid()
-        # msg['version'] = self.cfg.version
+    def build_msg(self, cmd, **kwargs):
+        # pyroute2 expacts a certain class and format for the "message" protocols.
+        # This sets everything needed from the config file.
+        self.msg_model = KernelMsgModel
+        set_trace()
+        self.msg_model.nla_map = self.cfg.get_msg_model(cmd)
+        self.cmd.msg_map = self.cfg.cmd_model
 
-        # # The policy map in the kernel code says always send three.
-        # msg['attrs'].append([ 'GENZ_A_GCID', GCID ])
-        # msg['attrs'].append([ 'GENZ_A_CCLASS', CCLASS ])
-        # msg['attrs'].append([ 'GENZ_A_UUID', UUID.bytes ])
-        # return msg
+        # construct a Command Model for the netlink communication
+        self.cfg.cmd_model = self._assign_msg_to_cmd(self.cfg.cmd_model)
+
+        if not kwargs.get('dont_bind', False):
+            self.bind()
 
 
     def sendmsg(self, msg):
         return self.nlm_request(msg,
                                 msg_type=self.prid,
                                 msg_flags=NLM_F_REQUEST|NLM_F_ACK)
-
-# See https://docs.python.org/3.5/library/uuid.html
-# Remember, RFC 4122 mixes endianness in subfields so watch that ntoh!
-
-# def YodelAyHeHUUID(random=True):
-#     """Return a uuid.UUID object."""
-#     if random:
-#         return uuid.uuid4()
-
-#     # Pick your favorite constructor, and refactor this routine accordingly.
-
-#     this = uuid.UUID('12345678123456781234567812345678')
-#     this = uuid.UUID(int=0x12345678123456781234567812345678)
-#     this = uuid.UUID('urn:uuid:12345678-1234-5678-1234-567812345678')
-#     this = uuid.UUID(bytes=b'\x12\x34\x56\x78' * 4)
-#     this = uuid.UUID(bytes_le=b'\x78\x56\x34\x12\x34\x12\x78\x56' +
-#                               b'\x12\x34\x56\x78\x12\x34\x56\x78')
-#     this = uuid.UUID(
-#         fields=(0x12345678, 0x1234, 0x5678, 0x12, 0x34, 0x567812345678))
-#     this = uuid.UUID('{12345678-1234-5678-1234-567812345678}')
-#     this = uuid.UUID('12345678-1234-5678-1234-567812345678')
-#     return this
-
-
-# if __name__ == '__main__':
-#     genznl = ZooKeeper()
-#     genznl.bind()
-#     UUID = YodelAyHeHUUID()
-#     msg = genznl.newmsg('GENZ_C_ADD_COMPONENT', 4242, 43, UUID)
-#     print('Sending PID=%d UUID=%s' % (msg['pid'], str(UUID)))
-#     try:
-#         # If it works, get a packet.  If not, raise an error.
-#         retval = genznl.sendmsg(msg)
-#         resperr = retval[0]['header']['error']
-#         if resperr:
-#             pprint(retval)
-#             raise RuntimeError(resperr)
-#         print('Success')
-#     except Exception as exc:
-#         raise SystemExit(str(exc))
-
-#     raise SystemExit(0)
