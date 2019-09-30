@@ -1,0 +1,1 @@
+cmd_/home/bender/dev/python3-alpaka/alpaka/kernel/genz_genl.ko := ld -r -m elf_x86_64 -z max-page-size=0x200000 -T ./scripts/module-common.lds --build-id  -o /home/bender/dev/python3-alpaka/alpaka/kernel/genz_genl.ko /home/bender/dev/python3-alpaka/alpaka/kernel/genz_genl.o /home/bender/dev/python3-alpaka/alpaka/kernel/genz_genl.mod.o ;  true

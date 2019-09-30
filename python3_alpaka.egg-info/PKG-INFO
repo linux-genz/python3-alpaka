@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: python3-alpaka
+Version: 0.1
+Summary: A Python3 netlink handler.
+Home-page: https://github.hpe.com/atsugami-kun/alpaka
+Author: Rocky Craig, Zach Volchak
+Author-email: zakhar.volchak@hpe.com
+License: UNKNOWN
+Description: "Alpaka" is a communicator between user space and kernel (and vice versa).
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: GNU General Public License v2 (GPLv2)
+Classifier: Operating System :: POSIX :: Linux
+Description-Content-Type: text/markdown

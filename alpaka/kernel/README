@@ -1,0 +1,13 @@
+To build the test:
+make
+
+To run the test:
+sudo insmod kern_recv.ko
+./user_send
+dmesg | tail -20
+
+
+ LLaMaS is a Linux-based Service application that runs as a backround process. Its
+primary job is to notify the local Kernel about the hardware devices status updates, e.g.
+plug/unplug events. It is using Netlink protocol to communicate (send/receive) to
+Kernel modules. "Redfish" services is used to register to its "device update" event.

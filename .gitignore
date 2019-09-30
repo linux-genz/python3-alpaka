@@ -1,0 +1,6 @@
+*.log
+__python__
+__pycache__
+*.pyc
+.vscode
+*.swp

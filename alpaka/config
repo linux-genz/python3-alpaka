@@ -1,0 +1,39 @@
+NETLINK_FAMILY_NAME = 'genz_cmd'
+VERSION = 1
+
+_prefix = 'GENZ_A_'
+""" A message model that will be sent over the Netlink..
+ <required>
+"""
+MSG_MODEL = (
+            ('UnUsed',            'none'),
+            (_prefix + 'GCID',    'uint32'),
+            (_prefix + 'CCLASS',  'uint16'),
+            (_prefix + 'UUID',    'string')   # bytearray not supported
+        )
+
+ADD = 'GENZ_C_ADD_COMPONENT'
+REMOVE = 'GENZ_C_REMOVE_COMPONENT'
+SYMLINK = 'GENZ_C_SYMLINK_COMPONENT'
+
+""" Kernel event indices.
+ Commands are matched from kern_recv.c::struct genl_ops genz_gnl_ops.
+ Kernel convention is not to use zero as an index or base value.
+ <required>
+"""
+CMD_OPTS = {
+    ADD: 1,
+    REMOVE: 2,
+    SYMLINK: 3
+}
+
+""" The set of all command numbers and their associated message structures.
+ This is the analog of the kernel 'struct genl_ops'.
+ Setting values to None will assume a MSG_MODEL for that key.
+ <required>
+"""
+CMD_MODEL = {
+    CMD_OPTS[ADD]: None,
+    CMD_OPTS[REMOVE]: None,
+    CMD_OPTS[SYMLINK]: None
+}
