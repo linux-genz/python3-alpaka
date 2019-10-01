@@ -1,5 +1,5 @@
 name = "python3-alpaka"
-from . import zookeeper, configurator
+from . import messenger, configurator
 
-ZooKeeper = zookeeper.ZooKeeper
+Messenger = messenger.Messenger
 Configurator = configurator.Configurator

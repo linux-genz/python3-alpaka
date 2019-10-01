@@ -79,7 +79,7 @@ class Alpaka(NetlinkSocket):
         '''Returns None or an object based on blocking/timeout.'''
         try:
             raw = self.recv(4096)
-        except BlockingIOError as err:  # EWOULDBLOCK
+        except BlockingIOError:  # EWOULDBLOCK
             return None
         return self._cooked(raw)
 

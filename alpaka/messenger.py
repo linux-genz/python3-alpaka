@@ -1,4 +1,23 @@
 #!/usr/bin/python3
+"""
+ * (C) Copyright 2018 Hewlett Packard Enterprise Development LP”.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+ * of the Software, and to permit persons to whom the Software is furnished to do
+ * so, subject to the following conditions:
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+"""
 
 # Get on the Generic bus.  Uses the llamas test module.
 
@@ -82,7 +101,7 @@ class Commandment(Marshal):
     msg_map = {}
 
 
-class ZooKeeper(GenericNetlinkSocket):
+class Messenger(GenericNetlinkSocket):
     """
         Constructs a netlink message in the right format from the config file
     (default one should be in the root of the project) and sends the message to
@@ -97,8 +116,7 @@ class ZooKeeper(GenericNetlinkSocket):
             @param 'dont_bind' <bool>: False or None - self.bind is called.
                                     True - user has to call self.bind manually.
         """
-        super().__init__()
-        # super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         cfg_path = kwargs.get('config', None)
         if cfg_path is None:
@@ -113,18 +131,6 @@ class ZooKeeper(GenericNetlinkSocket):
         self.msg_flags = kwargs.get('msg_flags', NLM_F_REQUEST|NLM_F_ACK)
         self.cmd = Commandment()    # Now pyroute2 methods see it.
         self.cfg = Configurator(cfg_path)
-
-        # # pyroute2 expacts a certain class and format for the "message" protocols.
-        # # This sets everything needed from the config file.
-        # self.msg_model = KernelMsgModel
-        # self.msg_model.nla_map = self.cfg.msg_model
-        # self.cmd.msg_map = self.cfg.cmd_model
-
-        # # construct a Command Model for the netlink communication
-        # self.cfg.cmd_model = self._assign_msg_to_cmd(self.cfg.cmd_model)
-
-        # if not kwargs.get('dont_bind', False):
-        #     self.bind()
 
 
     @property
@@ -179,7 +185,6 @@ class ZooKeeper(GenericNetlinkSocket):
         # pyroute2 expacts a certain class and format for the "message" protocols.
         # This sets everything needed from the config file.
         self.msg_model = KernelMsgModel
-        set_trace()
         self.msg_model.nla_map = self.cfg.get_msg_model(cmd)
         self.cmd.msg_map = self.cfg.cmd_model
 
