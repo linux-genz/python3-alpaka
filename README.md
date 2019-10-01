@@ -15,7 +15,7 @@
 
 ### How to Use
 
-Create a class and inherite from [alpaka.Zookeeper](https://github.hpe.com/atsugami-kun/python3-alpaka/blob/master/alpaka/zookeeper.py). Then, override "build_msg(self, \*\*kwargs)" function and use the object as follows:
+Create a class and inherite from [alpaka.Messenger](https://github.com/linux-genz/python3-alpaka/blob/master/alpaka/messenger.py). Then, override "build_msg(self, \*\*kwargs)" function and use the object as follows:
 
 ```
     zoo = Journal.mainapp.zookeeper
@@ -24,4 +24,4 @@ Create a class and inherite from [alpaka.Zookeeper](https://github.hpe.com/atsug
     retval = zoo.sendmsg(msg)
 ```
 
-[Example as used by LLaMaS](https://github.hpe.com/atsugami-kun/llamas/blob/master/llamas/blueprints/device/blueprint.py)
+[Example as used by LLaMaS](https://github.com/linux-genz/llamas/blob/master/llamas/blueprints/device/blueprint.py)
