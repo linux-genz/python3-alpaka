@@ -37,10 +37,16 @@ from types import SimpleNamespace
 
 from pyroute2.common import map_namespace
 from pyroute2.netlink import NETLINK_GENERIC, NetlinkError
-from pyroute2.netlink import NLM_F_REQUEST, NLM_F_DUMP, NLM_F_ACK
-from pyroute2.netlink import nla, nla_base, genlmsg
+from pyroute2.netlink import NLM_F_REQUEST, NLM_F_DUMP, NLM_F_ACK, NLA_F_NESTED
+from pyroute2.netlink import nla, nla_base, genlmsg, nlmsg
+
 from pyroute2.netlink.generic import GenericNetlinkSocket
 from pyroute2.netlink.nlsocket import Marshal
+
+from pyroute2.netlink import nla
+from base64 import b64encode, b64decode
+from socket import inet_ntoa, inet_aton, inet_pton, AF_INET, AF_INET6
+from struct import pack, unpack
 
 from .configurator import Configurator
 # Used in kernel module: genl_register_family(struct genl_family.name).
@@ -81,16 +87,39 @@ GENZ_C_SYMLINK_COMPONENT = 3
 # See also netlink/__init__.py::register_nlas() for optional fields.
 
 
-class KernelMsgModel(genlmsg):
+class DefaultMessageModel(genlmsg):
     """
         The set of all Netlink Attributes (NLAs) that could be passed.
     This is the analog of the kernel "struct nla_policy".
     """
-    prefix = 'GENZ_A_'      # A for "Attribute", a convenice for me.
+    # fields = (
+    #     # ('GENZ_A_FABRIC_NUM', 'I'),
+    #     ('GENZ_A_CCLASS', 'I'),
+    #     # ('GENZ_A_GCID', 'I'),
+    #     # ('GENZ_A_FRU_UUID', 's'),
+    # )
+
 
     # Zero-based arrays are sort-of needed here, but also somewhat frowned
     # upon. This needs further research, maybe in pyroute2 itself.
     nla_map = None
+
+
+    # class bsstuff(nla):
+
+    #     nla_map = (
+    #         ('GENZ_A_UL_UNSPEC', 'none'),
+    #         ('GENZ_A_UL', 'resource')
+    #     )
+
+    #     class resource(nla):
+
+    #         nla_map = (
+    #                 ('GENZ_A_UL_UNSPEC', 'none'),
+    #                 ('GENZ_A_U_UUID', 'string'),
+    #                 ('GENZ_A_U_CLASS', 'uint16'),
+    #                 ('GENZ_A_U_MRL', 'uint16'),
+    #             )
 
 
 class Commandment(Marshal):
@@ -116,7 +145,7 @@ class Messenger(GenericNetlinkSocket):
             @param 'dont_bind' <bool>: False or None - self.bind is called.
                                     True - user has to call self.bind manually.
         """
-        super().__init__(*args, **kwargs)
+        super().__init__() #anything you pass here, will be used against you!
 
         cfg_path = kwargs.get('config', None)
         if cfg_path is None:
@@ -184,18 +213,19 @@ class Messenger(GenericNetlinkSocket):
     def build_msg(self, cmd, **kwargs):
         # pyroute2 expacts a certain class and format for the "message" protocols.
         # This sets everything needed from the config file.
-        self.msg_model = KernelMsgModel
+        self.msg_model = kwargs.get('model', DefaultMessageModel)
         self.msg_model.nla_map = self.cfg.get_msg_model(cmd)
-        self.cmd.msg_map = self.cfg.cmd_model
+        # self.cmd.msg_map = self.cfg.cmd_model
 
         # construct a Command Model for the netlink communication
-        self.cfg.cmd_model = self._assign_msg_to_cmd(self.cfg.cmd_model)
-
+        # self.cfg.cmd_model = self._assign_msg_to_cmd(self.cfg.cmd_model)
         if not kwargs.get('dont_bind', False):
             self.bind()
+
+        return self.msg_model.nla_map
 
 
     def sendmsg(self, msg):
         return self.nlm_request(msg,
                                 msg_type=self.prid,
-                                msg_flags=NLM_F_REQUEST|NLM_F_ACK)
+                                msg_flags=NLM_F_REQUEST|NLM_F_ACK|NLA_F_NESTED)
