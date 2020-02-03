@@ -1,2 +1,1 @@
-flask_fat@ git+https://github.com/ProjectVellum/flask-api-template.git@v0.1.2
 pyroute2>=0.5.5
