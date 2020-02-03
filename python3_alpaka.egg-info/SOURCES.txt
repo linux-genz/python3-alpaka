@@ -2,9 +2,11 @@ README.md
 setup.py
 alpaka/__init__.py
 alpaka/alpaka.py
+alpaka/config
 alpaka/configurator.py
-alpaka/zookeeper.py
+alpaka/messenger.py
 python3_alpaka.egg-info/PKG-INFO
 python3_alpaka.egg-info/SOURCES.txt
 python3_alpaka.egg-info/dependency_links.txt
+python3_alpaka.egg-info/requires.txt
 python3_alpaka.egg-info/top_level.txt

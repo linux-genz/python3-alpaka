@@ -6,10 +6,7 @@
 
 ```
   sudo apt install python3-pip
-  git clone git@github.hpe.com:atsugami-kun/python3-alpaka.git
-
-  cd ./python3-alpaka
-  pip3 install -r requirements.txt
+  pip3 git+https://github.com/linux-genz/python3-alpaka.git@v0.1
 ```
 
 
@@ -20,7 +17,7 @@ Create a class and inherite from [alpaka.Messenger](https://github.com/linux-gen
 ```
     zoo = Journal.mainapp.zookeeper
     msg = zoo.build_msg(cmd=zoo.cfg.get('ADD'), arg_one="some value", arg_two="other value", anything_else="yet another")
-    
+
     retval = zoo.sendmsg(msg)
 ```
 
