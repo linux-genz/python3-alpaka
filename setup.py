@@ -11,7 +11,7 @@ with open('README.md', 'r') as file_obj:
 #by outside world.
 requirements = []
 with open('requirements.txt', 'r') as file_obj:
-    requirements = file_obj.read().split('\n')
+    requirements.extend(file_obj.read().split('\n'))
 
 setuptools.setup(
     name='python3-alpaka',
@@ -30,6 +30,10 @@ setuptools.setup(
     packages=setuptools.find_packages(),
 
     install_requires=requirements,
+    dependency_links=[
+        'git+https://github.com/ProjectVellum/flask-api-template.git@v0.1.2'
+    ],
+
 
     classifiers=[
         'Programming Language :: Python :: 3',
