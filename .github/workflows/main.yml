@@ -1,0 +1,9 @@
+on: [push]
+
+jobs:
+  test_job:
+    runs-on: ubuntu-latest
+    name: install_and_unittests
+    steps:
+        - name: Checkout
+          uses: ProjectVellum/flask-api-template@zach_dev
