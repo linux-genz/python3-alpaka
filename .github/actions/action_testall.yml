@@ -1,6 +1,0 @@
-# action.yml
-name: 'python3-alpaka test container'
-description: 'Run docker container that tests install and runs project unittests.'
-runs:
-  using: 'docker'
-  image: 'Dockerfiles/Dockerfile'
